@@ -3,51 +3,53 @@ import React, { Component } from 'react';
 class RoomList extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
-    this.roomsRef = this.props.firebase.database().ref('rooms');
     this.state = {
       rooms: [],
       newRoomName: ''
-    }
+    };
+    this.roomsRef = this.props.firebase.database().ref('rooms');
+    this.setRoom = this.setRoom.bind(this);
+    this.createRoom = this.createRoom.bind(this);
   }
-  componentDidMount() {
-    this.roomsRef.on('child_added', snapshot => {
-      this.setState({ rooms: this.state.rooms.concat(snapshot.val().name) });
-    })
+
+  setRoom(e) {
+    this.setState({ newRoomName: e.target.value });
   }
-  handleChange(event) {
-    this.setState({ newRoomName: event.target.value })
-  }
-  handleClick() {
+
+  createRoom(e) {
+    e.preventDefault();
     this.roomsRef.push({ name: this.state.newRoomName });
     this.setState({ newRoomName: '' })
   }
+
+  componentDidMount() {
+    this.roomsRef.on('child_added', snapshot => {
+      const room = snapshot.val();
+      room.key = snapshot.key;
+      this.setState({ rooms: this.state.rooms.concat(room) });
+    });
+  }
+
   render() {
     return (
       <div>
-        <div> Bloc Chat </div>
-        <div> Select your room </div>
+        <h1>Bloc Chat</h1>
+        <h2>Select your room</h2>
         <ul>
           {
-            this.state.rooms.map((roomName, index) => {
-              return <RoomItem key={index} roomName={roomName} />
+            this.state.rooms.map((chatRoom) => {
+              return <li key={chatRoom.key}>{chatRoom.name}</li>
             })
           }
         </ul>
-        <form>
-          <input type="text" value={this.state.newRoomName} onChange={this.handleChange.bind(this)} />
-          <button onClick={this.handleClick.bind(this)}> + </button>
+        <form onSubmit={this.createRoom}>
+          <label>Chat room </label>
+          <input type='text' value={this.state.newRoomName} onChange={this.setRoom} />
+          <button type='submit'>Submit</button>
         </form>
       </div>
-    )
+    );
   }
 }
-
-const RoomItem = (props) => {
-  return (
-    <li> {props.roomName} </li>
-  )
-}
-
 
 export default RoomList;
