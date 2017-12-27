@@ -4,6 +4,7 @@ import logo from './logo.svg';
 import './App.css';
 import RoomList from './components/RoomList';
 import MessageList from './components/MessageList';
+import User from './components/User';
 
 // Initialize Firebase
 var config = {
@@ -21,13 +22,23 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentRoom: ' --- '
+      currentRoom: ' --- ',
+      user: ''
     };
   }
 
   appCallback = (roomListData) => {
     this.setState ({ currentRoom: roomListData.name });
   }
+
+  setUser(user) {
+    if (user) {
+      this.setState({ user: user.displayName });
+    } else {
+      this.setState({ user: "Guest" });
+    }
+  }
+
 
   render() {
     return (
@@ -37,20 +48,32 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to BlocChat</h1>
         </header>
+        
+        <nav>
+          <User
+            firebase={firebase}
+            currentUsername={this.state.user}
+            setUser={(e) => this.setUser(e)}
+          />
+        </nav>
 
         <div className="content">
 
-          <div className="room-list">
-            <RoomList firebase={firebase} roomListCallback={this.appCallback} />
+          <div className="listing">
+            <RoomList 
+              firebase={firebase} 
+              roomListCallback={this.appCallback} 
+            />
           </div>
 
-          <div className="message-header">
-
-            <div className="message-list">
-              <p className="message-header">Current Chat Room - {this.state.currentRoom}</p>
-              <MessageList firebase={firebase} messageCurrentRoom={this.state.currentRoom} />
-            </div>
+          <div className="listing">
+            <p className="message-header">Current Chat Room - {this.state.currentRoom}</p>
+            <MessageList 
+              firebase={firebase} 
+              messageCurrentRoom={this.state.currentRoom} 
+            />
           </div>
+
         </div>
       </div>
     );

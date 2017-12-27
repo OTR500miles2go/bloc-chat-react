@@ -31,16 +31,13 @@
   overflow: auto;
 }
 
-.room-list {
-  width: 30%;
+.listing {
+  width: 48%;
+  height: 300px;
+  overflow: scroll;
   float: left;
   margin: 1%;
-}
-
-.message-list {
-  width: 69.9%;
-  float: left;
-  margin: 1%;
+  border: 1px solid #0095dd;
 }
 
 

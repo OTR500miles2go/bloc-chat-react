@@ -1,0 +1,9 @@
+.user-menu {
+  padding: 20px;
+  font-size: 20px;
+  border: 20px solid rgba(0,0,0,0.5);
+}
+
+.user-button {
+  margin: 10px 10px 0 0;
+}
