@@ -4,57 +4,54 @@ import './RoomList.css';
 class RoomList extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
-    this.roomsRef = this.props.firebase.database().ref('rooms');
     this.state = {
       rooms: [],
       newRoomName: ''
-    }
+    };
+    this.roomsRef = this.props.firebase.database().ref('rooms');
+    this.setRoom = this.setRoom.bind(this);
+    this.createRoom = this.createRoom.bind(this);
+  }
+
+  setRoom(e) {
+    this.setState({ newRoomName: e.target.value });
+  }
+
+  createRoom(e) {
+    e.preventDefault();
+    this.roomsRef.push({ name: this.state.newRoomName });
+    this.setState({ newRoomName: '' })
+  }
+
+  chooseRoom(room) {
+    this.props.roomListCallback(room);
   }
 
   componentDidMount() {
     this.roomsRef.on('child_added', snapshot => {
-      this.setState({ rooms: this.state.rooms.concat(snapshot.val().name) });
-    })
-  }
-
-  handleChange(event) {
-    this.setState({ newRoomName: event.target.value })
-  }
-
-  handleClick() {
-    this.roomsRef.push({ name: this.state.newRoomName });
-    this.setState({ newRoomName: '' })
+      const room = snapshot.val();
+      room.key = snapshot.key;
+      this.setState({ rooms: this.state.rooms.concat(room) });
+    });
   }
 
   render() {
     return (
       <div>
-        <div> Bloc Chat </div>
-        <div className="side-panel"> 
-          <p className="side-header">Select your room </p>
-        <ul className="room-list">
+        <ul className="chat-room">
           {
-            this.state.rooms.map((roomName, index) => {
-                return <RoomItem key={index} roomName={roomName} />
+            this.state.rooms.map((chatRoom, index) => {
+              return <ul className="room-name" key={chatRoom.key} onClick={(e) => this.chooseRoom(chatRoom)}><a>{chatRoom.name}</a></ul>
             })
           }
         </ul>
-        <form>
-          <input type="text" value={this.state.newRoomName} onChange={this.handleChange.bind(this)} />
-          <button onClick={this.handleClick.bind(this)}> + </button>
+        <form onSubmit={this.createRoom}>
+          <input type='text' placeholder="Create chat room" value={this.state.newRoomName} onChange={this.setRoom} />
+          <button type='submit'> + </button>
         </form>
-        </div>
       </div>
-    )
+    );
   }
 }
-
-const RoomItem = (props) => {
-  return (
-    <li> {props.roomName} </li>
-  )
-}
-
 
 export default RoomList;
