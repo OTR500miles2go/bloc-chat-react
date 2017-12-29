@@ -39,7 +39,6 @@ class App extends Component {
     }
   }
 
-
   render() {
     return (
       <div className="App">
@@ -52,11 +51,11 @@ class App extends Component {
         <nav>
           <User
             firebase={firebase}
-            currentUsername={this.state.user}
             setUser={(e) => this.setUser(e)}
+            currentUsername={this.state.user}
           />
         </nav>
-
+        
         <div className="content">
 
           <div className="listing">
@@ -71,6 +70,7 @@ class App extends Component {
             <MessageList 
               firebase={firebase} 
               messageCurrentRoom={this.state.currentRoom} 
+              messageUsername={this.state.user}
             />
           </div>
 
